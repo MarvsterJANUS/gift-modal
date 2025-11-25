@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🎄 Überraschung 🎁</title>
+</head>
+<body style="margin:0; background:black;">
+    <video src="reward.mp4" autoplay controls playsinline style="width:100vw; height:100vh; object-fit:contain;" id="v"></video>
+
+    <script>
+        // Try to unmute AFTER user interaction (clicking your link counts)
+        const v = document.getElementById("v");
+        v.muted = false;
+        v.play();
+    </script>
+</body>
+</html>

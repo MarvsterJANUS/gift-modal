@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Adventskalender – Geschenk Modal (Freirubbeln)</title>
+  <style>
+    :root {
+      --backdrop: rgba(0, 0, 0, .55);
+      --brand: #e23b2e;
+      --gift-scale: 0.80;
+      --lid-lift: -20%;
+      /* how far the lid moves up on open */
+      --lid-tilt: 32deg;
+      /* how much the lid tilts on open */
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.4;
+      margin: 0;
+      background: #faf7f2;
+      color: #222
+    }
+
+    .demo {
+      display: grid;
+      place-items: center;
+      min-height: 100vh
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      background: var(--brand);
+      color: #fff;
+      padding: .9rem 1.2rem;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(226, 59, 46, .25)
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px
+    }
+
+    .modal[open] {
+      display: flex
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--backdrop);
+      backdrop-filter: blur(2px)
+    }
+
+    .dialog {
+      position: relative;
+      z-index: 2;
+      width: min(720px, 96vw);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+      overflow: hidden
+    }
+
+    .dialog header {
+      padding: 16px 20px;
+      background: linear-gradient(180deg, #fff, #f7efe4);
+      border-bottom: 1px solid #eee
+    }
+
+    .dialog h2 {
+      margin: 0;
+      font-size: 1.1rem
+    }
+
+    .dialog .content {
+      padding: 16px
+    }
+
+    /* Moves the whole gift area down slightly */
+.gift-stage {
+  position: relative;
+  aspect-ratio: 1/1;
+  width: min(560px, 86vw);
+  margin: 40px auto 0; /* ↑ this top margin pushes the gift down */
+}
+
+    .gift {
+      position: absolute;
+      inset: 0;
+      display: block;
+      pointer-events: none
+    }
+
+    /* Zentrierte Bilder, Top leicht angehoben */
+    /* Zentrierte Bilder */
+    .gift img {
+      position: absolute;
+      left: 50%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+      width: calc(var(--gift-scale) * 90%);
+      height: auto;
+      display: block;
+    }
+
+    /* Deckel leicht angehoben */
+    .gift.lid img {
+      transform: translate(-50%, -80%);
+    }
+
+    /* Boden etwas kleiner */
+    .gift.base img {
+      width: calc(var(--gift-scale) * 86%);
+      /* slightly smaller than top */
+    }
+
+    /* move top lid up */
+    #scratch {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      cursor: pointer;
+      border-radius: 16px
+    }
+
+    .progress {
+      margin-top: 10px;
+      text-align: center;
+      font-size: .9rem;
+      color: #666
+    }
+
+    .cta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 16px
+    }
+
+    .open-btn {
+      appearance: none;
+      border: 0;
+      border-radius: 12px;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 700;
+      padding: .8rem 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(226, 59, 46, .3)
+    }
+
+    .open-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      box-shadow: none
+    }
+
+    /* pivot a bit lower so it doesn’t shoot upward */
+    .lid {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 35%;
+      transition: transform .9s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    /* gentle lift + tilt (instead of translateY(-40%)) */
+    .lid.open {
+      transform: translateY(var(--lid-lift)) rotateX(var(--lid-tilt));
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: 0;
+      background: transparent;
+      font-size: 28px;
+      line-height: 1;
+      color: #666;
+      cursor: pointer
+    }
+
+    .close:hover {
+      color: #111
+    }
+
+    .prize {
+      display: none;
+      text-align: center
+    }
+
+    .prize a {
+      display: inline-block;
+      margin-top: 8px;
+      background: var(--brand);
+      color: #fff;
+      text-decoration: none;
+      padding: .8rem 1rem;
+      border-radius: 12px;
+      font-weight: 700
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo"> <button class="btn" id="openGift" aria-haspopup="dialog">Türchen öffnen</button> </div>
+  <section class="modal" id="giftModal" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
+    <div class="overlay" data-close></div>
+    <div class="dialog">
+      <header>
+        <h2 id="modalTitle">Freirubbeln & Geschenk öffnen</h2> <button class="close" title="Schließen"
+          aria-label="Schließen" data-close>&times;</button>
+      </header>
+      <div class="content">
+        <div class="gift-stage" id="stage">
+          <div class="gift base"><img id="imgBottom" src="gift_lid.png" alt="Geschenk Boden" loading="eager"></div>
+          <div class="gift lid" id="lid"><img id="imgTop" src="gift_top.png" alt="Geschenk Deckel"></div> <canvas
+            id="scratch" aria-label="Schnee zum Freirubbeln"></canvas>
+        </div>
+        <div class="progress" id="progress">Rubbel den Schnee frei… (0%)</div>
+        <div class="cta"><button class="open-btn" id="openBtn" disabled>Geschenk öffnen</button></div>
+        <div class="prize" id="prize">
+          <h3>🎁 Dein Gewinn</h3> <a id="prizeLink" href="play.html" target="_blank" rel="noopener">Zum Preis</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="gift-modal.js" defer></script>
+</body>
+
+</html>
