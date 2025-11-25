@@ -12,7 +12,7 @@
   const progressEl = document.getElementById('progress');
   const openBtn = document.getElementById('openBtn');
 
-  const PRIZE_URL = 'https://example.com/dein-preis';
+  const PRIZE_URL = 'play.html';
   prizeLink.href = PRIZE_URL;
 
   openModalBtn.addEventListener('click', () => {
@@ -145,3 +145,4 @@
     }
   }
 })();
+
